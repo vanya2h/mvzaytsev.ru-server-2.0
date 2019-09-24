@@ -1,13 +1,11 @@
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
+import { internalModule } from './internal';
 
 export const container = new Container();
 
-export const run = (): Promise<Container> => new Promise((resolve, reject) => {
-	try {
-		container.load(buildProviderModule());
-		return resolve(container);
-	} catch (error) {
-		return reject(error);
-	}
-});
+export const run = async (): Promise<Container> => {
+	await container.loadAsync(internalModule);
+	buildProviderModule();
+	return container;
+};

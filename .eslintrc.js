@@ -2,9 +2,9 @@ module.exports = {
 	parser: '@typescript-eslint/parser',
   extends: ['airbnb-typescript/base'],
   env: {
-    "browser": true,
-    "node": true,
-    "commonjs": true
+    'browser': true,
+    'node': true,
+    'commonjs': true
   },
 	settings: {
     'import/resolver': 'webpack',
@@ -14,11 +14,15 @@ module.exports = {
 		sourceType: 'module',
   },
 	rules: {
-		indent: ['error', 'tab'],
 		'no-console': 0,
     'import/prefer-default-export': 0,
-    'no-tabs': 0,
-    "indent": [2, "tab"],
+		'no-tabs': 0,
+		'implicit-arrow-linebreak': 0,
+		'indent': [2, 'tab'],
+		'max-len': [2, {
+			'code': 100,
+			'tabWidth': 2
+		}],
     'import/no-default-export': 1,
     '@typescript-eslint/indent': 0,
 		'@typescript-eslint/interface-name-prefix': 0,

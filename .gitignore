@@ -3,6 +3,8 @@
 .DS_Store
 .awcache
 
+.env*
+
 # Build
 build/
 test-reports/
@@ -26,5 +28,3 @@ npm-debug.*
 .classpath
 .project
 .settings
-
-.env.prod
