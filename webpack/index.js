@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const path = require('path');
+const nodeExternals = require("webpack-node-externals")
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
 const { config, paths } = require('../config');
@@ -14,6 +15,7 @@ const base = {
 		path: paths.buildDir,
 		publicPath: '/',
 	},
+	externals: [nodeExternals()],
 	resolve: {
 		extensions: ['.ts', '.js'],
 		alias: {

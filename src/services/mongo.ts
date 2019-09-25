@@ -12,6 +12,7 @@ export class MongoService {
 		reconnectTries: Number.MAX_VALUE,
 		promiseLibrary: Promise,
 		useNewUrlParser: true,
+		ssl: true,
 		useUnifiedTopology: true,
 	};
 
