@@ -7,9 +7,28 @@ import { IUser } from './types';
 @provides(UserModel)
 export class UserModel {
 	public static createSchema = (): Schema<IUser> => new Schema({
-		email: { type: String, required: true, unique: true },
-		name: { type: String, required: true },
-		password: { type: String, required: true },
+		email: {
+			type: String,
+			required: true,
+			unique: true,
+		},
+		name: {
+			type: String,
+			required: true,
+		},
+		role: {
+			type: String,
+			required: true,
+			enum: [
+				'Teacher',
+				'Parent',
+				'Student',
+			],
+		},
+		password: {
+			type: String,
+			required: true,
+		},
 	}, {
 		timestamps: true,
 	});

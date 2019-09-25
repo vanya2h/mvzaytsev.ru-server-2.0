@@ -1,7 +1,5 @@
 import { Container } from 'inversify';
-import express, {
-	NextFunction, Response, Request, Application,
-} from 'express';
+import express, { Application } from 'express';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import { Server } from 'http';
 import { IConfig } from '~/interfaces/config';
@@ -20,6 +18,7 @@ export const run = async (): Promise<Container> => {
 		mongoPassword: process.env.MONGO_PASSWORD,
 		mongoHost: process.env.MONGO_HOST,
 		mongoDatabase: process.env.MONGO_DATABASE,
+		secret: process.env.SECRET,
 		prefix: process.env.PREFIX,
 		port: parseInt(process.env.PORT, 10),
 	};
@@ -47,28 +46,6 @@ export const run = async (): Promise<Container> => {
 	container.bind<Server>(HTTP_SERVER).toConstantValue(server);
 
 	const router = express.Router();
-
-	app.use(config.prefix, router);
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	app.use((err: any, req: Request, res: Response, __: NextFunction) => {
-		if (err.name === 'ValidationError') {
-			res.status(422);
-			return res.json(err);
-		}
-
-		res.status(500);
-
-		if (err instanceof Error) {
-			return res.json({
-				reason: err.message,
-			});
-		}
-
-		return res.json({
-			reason: 'Неизвестная ошибка',
-		});
-	});
 
 	container.bind<express.Router>(ROUTER).toConstantValue(router);
 

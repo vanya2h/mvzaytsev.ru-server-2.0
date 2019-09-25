@@ -7,7 +7,7 @@ export class HashifierService {
 		const salt = await this.getSalt();
 
 		return new Promise((resolve, reject) => {
-			bcrypt.hash(password + this.secret, salt, (error, hash) => (
+			bcrypt.hash(password, salt, (error, hash) => (
 				error ? reject(error) : resolve(hash)
 			));
 		});

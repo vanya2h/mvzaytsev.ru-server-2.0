@@ -4,5 +4,6 @@ export interface IConfig {
 	mongoHost: string;
 	mongoDatabase: string,
 	prefix: string,
-	port: number
+	port: number,
+	secret: string
 }
