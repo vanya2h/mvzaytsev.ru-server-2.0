@@ -3,11 +3,9 @@ import express, { Application } from 'express';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import { Server } from 'http';
 import { IConfig } from '~/interfaces/config';
-import {
-	CONFIG, MONGOOSE, EXPRESS_APP, HTTP_SERVER, ROUTER,
-} from '~/consts';
+import * as consts from '~/consts';
 import { MongoService } from '~/services/mongo';
-import { HashifierService } from '~/services/hashifier';
+import { PasswordVerifier } from '~/services/password-verifier';
 import { ExpressAppService } from '~/services/express-app';
 
 export const container = new Container();
@@ -19,11 +17,13 @@ export const run = async (): Promise<Container> => {
 		mongoHost: process.env.MONGO_HOST,
 		mongoDatabase: process.env.MONGO_DATABASE,
 		secret: process.env.SECRET,
+		emailActor: process.env.EMAIL_ACTOR,
+		emailActorName: process.env.EMAIL_ACTOR_NAME,
 		prefix: process.env.PREFIX,
 		port: parseInt(process.env.PORT, 10),
 	};
 
-	container.bind(CONFIG).toConstantValue(config);
+	container.bind(consts.CONFIG).toConstantValue(config);
 
 	const mongoService = new MongoService();
 
@@ -33,21 +33,19 @@ export const run = async (): Promise<Container> => {
 		user: config.mongoUser,
 	});
 
-	container.bind(MONGOOSE).toConstantValue(connection);
+	container.bind(consts.MONGOOSE).toConstantValue(connection);
 
-	const hashifier = new HashifierService(process.env.SECRET);
-
-	container.bind(HashifierService).toConstantValue(hashifier);
+	const passwordVerfier = new PasswordVerifier(process.env.SECRET);
+	container.bind(PasswordVerifier).toConstantValue(passwordVerfier);
 
 	const expressAppService = new ExpressAppService();
 	const { app, server } = expressAppService.build();
 
-	container.bind<Application>(EXPRESS_APP).toConstantValue(app);
-	container.bind<Server>(HTTP_SERVER).toConstantValue(server);
+	container.bind<Application>(consts.EXPRESS_APP).toConstantValue(app);
+	container.bind<Server>(consts.HTTP_SERVER).toConstantValue(server);
 
 	const router = express.Router();
-
-	container.bind<express.Router>(ROUTER).toConstantValue(router);
+	container.bind<express.Router>(consts.ROUTER).toConstantValue(router);
 
 	container.load(buildProviderModule());
 

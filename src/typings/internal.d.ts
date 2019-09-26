@@ -7,6 +7,9 @@ declare namespace NodeJS {
 		MONGO_DATABASE: string,
 		SECRET: string,
 		PORT: string,
+		EMAIL_ACTOR: string,
+		EMAIL_ACTOR_NAME: string,
 		PREFIX: string,
+		SENDGRID_API_KEY: string,
   }
 }

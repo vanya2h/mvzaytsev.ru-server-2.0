@@ -1,15 +1,11 @@
-import { Document } from 'mongoose';
-
-export enum UserRole {
-	Teacher = 'Teacher',
-	Parent = 'Parent',
-	Student = 'Student'
-}
+import { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
-	comparePassword: (this: IUser, candidate: string) => Promise<boolean>;
-	email: string;
-	name: string;
-	role: UserRole,
+	email: Schema.Types.ObjectId;
+	email_raw: string;
 	password: string;
+	name: string;
+	comparePassword: (this: IUser, candidate: string) => Promise<boolean>;
+	isAdmin: boolean;
+	bio: string;
 }

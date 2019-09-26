@@ -18,6 +18,7 @@ module.exports = {
     'import/prefer-default-export': 0,
 		'no-tabs': 0,
 		'implicit-arrow-linebreak': 0,
+		'new-cap': 0,
 		'indent': [2, 'tab'],
 		'no-underscore-dangle': [2, { 'allowAfterThis': true }],
 		'max-len': [2, {
