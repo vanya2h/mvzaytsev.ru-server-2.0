@@ -6,6 +6,7 @@ import { makeSecret } from '~/utils/make-secret';
 import { EMAIL_MODEL } from '~/consts';
 import { MailService } from '~/services/mail';
 import { verificationEmail } from '~/emails/verification';
+import { PasswordVerifier } from '~/services/password-verifier';
 
 @provides(EmailModel)
 export class EmailModel {
@@ -23,22 +24,26 @@ export class EmailModel {
 
 	public constructor(
 		mailService: MailService,
+		private readonly passwordVerifier: PasswordVerifier,
 	) {
 		const schema = EmailModel.createSchema();
 
 		schema.method('resend', async function resend(this: IEmail): Promise<void> {
 			if (this.confirmed) throw new Error('E-mail уже успешно был подтвержден');
+
 			if (this.last_sended && moment().diff(moment(this.last_sended), 'seconds') < 60) {
 				throw new Error('Вы не можете отправлять E-mail чаще, чем 1 раз в 60 секунд');
 			}
 
-			this.secret = makeSecret(6);
+			const secret = makeSecret(6);
+
+			this.secret = await passwordVerifier.hashWithSalt(secret);
 			await this.save();
 
 			await mailService.send(
 				this.email,
 				'Подтвердите ваш почтовый адрес',
-				verificationEmail(this.secret),
+				verificationEmail(secret),
 			);
 
 			this.last_sended = new Date().toISOString();
@@ -49,7 +54,10 @@ export class EmailModel {
 			this: IEmail,
 			candidate: string,
 		): Promise<void> {
-			if (this.secret !== candidate) {
+			if (!this.secret) throw new Error('Ваш E-mail уже был успешно подтверждён');
+			const isMatched = await passwordVerifier.verifyAgainst(candidate, this.secret);
+
+			if (!isMatched) {
 				throw new Error('Код введен неверное, попробуйте ещё раз или отправьте письмо снова');
 			}
 			this.secret = null;
