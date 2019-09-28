@@ -1,7 +1,9 @@
-import mongoose, { Schema, Model, HookNextFunction } from 'mongoose';
+import {
+	Model, Schema, model, HookNextFunction,
+} from 'mongoose';
 import { provides } from '~/utils/provides';
 import { PasswordVerifier } from '~/services/password-verifier';
-import { IUser } from './types';
+import { IUser, IUserModel } from './types';
 import { USER_MODEL } from '~/consts';
 
 @provides(UserModel)
@@ -14,14 +16,11 @@ export class UserModel {
 		bio: { type: String, isRequired: false },
 	},
 	{
-		timestamps: {
-			createdAt: 'createdAt',
-			updatedAt: 'updatedAt',
-		},
+		timestamps: true,
 		strict: false,
 	});
 
-	public model: Model<IUser>;
+	public model: IUserModel;
 
 	public constructor(passwordVerifier: PasswordVerifier) {
 		const schema = UserModel.createSchema();
@@ -37,13 +36,42 @@ export class UserModel {
 			}
 		});
 
-		schema.methods.comparePassword = async function comparePassword(
+		schema.method('comparePassword', async function comparePassword(
 			this: IUser,
 			candidate: string,
 		): Promise<boolean> {
 			return passwordVerifier.verifyAgainst(candidate, this.password);
-		};
+		});
 
-		this.model = mongoose.model<IUser>(USER_MODEL, schema);
+		schema.static('findByEmail', async function findByEmail(
+			this: Model<IUser>,
+			email: string,
+		) {
+			const [user] = await this.aggregate([
+				{
+					$lookup: {
+						from: 'emails',
+						localField: 'email',
+						foreignField: '_id',
+						as: 'email',
+					},
+				},
+				{ $unwind: '$email' },
+				{
+					$addFields: {
+						email_raw: '$email.email',
+					},
+				},
+				{
+					$match: {
+						email_raw: email,
+					},
+				},
+			]);
+
+			return user as IUser;
+		});
+
+		this.model = model<IUser, IUserModel>(USER_MODEL, schema);
 	}
 }

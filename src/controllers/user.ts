@@ -43,41 +43,20 @@ export class UserController {
 
 		router.post('/sign-in', async (req, res, next) => {
 			try {
-				// eslint-disable-next-line no-underscore-dangle
-				const [user] = await model.aggregate([
-					{
-						$lookup: {
-							from: 'emails',
-							localField: 'email',
-							foreignField: '_id',
-							as: 'email',
-						},
-					},
-					{ $unwind: '$email' },
-					{
-						$addFields: {
-							email_raw: '$email.email',
-						},
-					},
-					{
-						$match: {
-							email_raw: req.body.email,
-						},
-					},
-				]);
+				const user = await model.findByEmail(req.body.email);
 
 				if (!user) throw new Error('Пользователь с таким E-mail не зарегистрован');
 				// eslint-disable-next-line no-underscore-dangle
-				const userDoc = await model.findById(user._id);
+				const doc = await model.findById(user._id);
 
-				if (!userDoc) throw new Error('Что-то пошло не так, обратитесь в поддержку');
+				if (!doc) throw new Error('Что-то пошло не так, обратитесь в поддержку');
 
-				const isCompared = await userDoc.comparePassword(req.body.password);
+				const isCompared = await doc.comparePassword(req.body.password);
 				if (!isCompared) throw new Error('Кажется вы ошиблись при вводе пароля, попробуйте снова');
 
 				const token = this.jwtService.sign({
 					// eslint-disable-next-line no-underscore-dangle
-					userId: userDoc._id,
+					userId: doc._id,
 				});
 
 				return res.json({ token, user });

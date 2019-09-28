@@ -1,11 +1,19 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Model } from 'mongoose';
 
-export interface IUser extends Document {
+export interface IUserDocument extends Document {
 	email: Schema.Types.ObjectId;
 	email_raw: string;
 	password: string;
 	name: string;
-	comparePassword: (this: IUser, candidate: string) => Promise<boolean>;
 	isAdmin: boolean;
 	bio: string;
+}
+
+export interface IUser extends IUserDocument {
+	comparePassword(candidate: string): Promise<boolean>;
+}
+
+
+export interface IUserModel extends Model<IUser> {
+	findByEmail(email: string,): Promise<IUser>,
 }

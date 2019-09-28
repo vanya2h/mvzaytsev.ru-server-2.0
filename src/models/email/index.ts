@@ -1,7 +1,7 @@
-import mongoose, { Schema, Model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import moment from 'moment';
 import { provides } from '~/utils/provides';
-import { IEmail } from './types';
+import { IEmail, IEmailModel } from './types';
 import { makeSecret } from '~/utils/make-secret';
 import { EMAIL_MODEL } from '~/consts';
 import { MailService } from '~/services/mail';
@@ -16,20 +16,17 @@ export class EmailModel {
 		secret: { type: String, default: null },
 	},
 	{
-		timestamps: {
-			createdAt: 'createdAt',
-			updatedAt: 'updatedAt',
-		},
+		timestamps: true,
 	});
 
-	public model: Model<IEmail>;
+	public model: IEmailModel;
 
 	public constructor(
 		mailService: MailService,
 	) {
 		const schema = EmailModel.createSchema();
 
-		schema.methods.resend = async function resend(this: IEmail): Promise<void> {
+		schema.method('resend', async function resend(this: IEmail): Promise<void> {
 			if (this.confirmed) throw new Error('E-mail уже успешно был подтвержден');
 			if (this.last_sended && moment().diff(moment(this.last_sended), 'seconds') < 60) {
 				throw new Error('Вы не можете отправлять E-mail чаще, чем 1 раз в 60 секунд');
@@ -46,9 +43,9 @@ export class EmailModel {
 
 			this.last_sended = new Date().toISOString();
 			await this.save();
-		};
+		});
 
-		schema.methods.confirm = async function confirm(
+		schema.method('confirm', async function confirm(
 			this: IEmail,
 			candidate: string,
 		): Promise<void> {
@@ -59,8 +56,8 @@ export class EmailModel {
 			this.confirmed = true;
 
 			await this.save();
-		};
+		});
 
-		this.model = mongoose.model<IEmail>(EMAIL_MODEL, schema);
+		this.model = mongoose.model<IEmail, IEmailModel>(EMAIL_MODEL, schema);
 	}
 }
