@@ -50,7 +50,7 @@
     "inversify-binding-decorators": "4.0.0",
     "jsonwebtoken": "8.5.1",
     "moment": "2.24.0",
-    "mongoose": "5.7.1",
+    "mongoose": "5.7.5",
     "morgan": "1.9.1",
     "nodemon-webpack-plugin": "4.1.1",
     "password-hash-and-salt": "0.1.4",
