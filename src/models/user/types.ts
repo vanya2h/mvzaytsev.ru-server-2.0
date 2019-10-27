@@ -1,8 +1,33 @@
 import { Document, Schema, Model } from 'mongoose';
 
+/**
+ * @swagger
+ * definitions:
+ *  User:
+ *   allOf:
+ *    - $ref: '#/definitions/MongooseModel'
+ *    - type: object
+ *      properties:
+ *       email:
+ *        type: string
+ *        format: email
+ *        required: true
+ *       name:
+ *        type: string
+ *        required: true
+ *       isAdmin:
+ *        type: boolean
+ *        required: true
+ *       bio:
+ *        type: string
+ *        required: true
+ *       password:
+ *        type: string
+ *        required: true
+ */
+
 export interface IUserDocument extends Document {
 	email: Schema.Types.ObjectId;
-	email_raw: string;
 	password: string;
 	name: string;
 	isAdmin: boolean;

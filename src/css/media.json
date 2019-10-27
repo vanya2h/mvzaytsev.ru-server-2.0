@@ -1,0 +1,12 @@
+{
+  "custom-media": {
+    "--mobile-only": "(max-width: 578px)",
+    "--mini-tablet": "(min-width: 579px)",
+    "--mini-tablet-only": "(min-width: 579px) and (max-width: 767px)",
+    "--tablet": "(min-width: 768px)",
+    "--tablet-only": "(min-width: 768px) and (max-width: 980px)",
+    "--desktop": "(min-width: 981px)",
+    "--desktop-only": "(min-width: 981px) and (max-width: 1365px)",
+    "--large": "(min-width: 1366px)"
+  }
+}

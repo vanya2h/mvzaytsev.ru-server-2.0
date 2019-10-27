@@ -1,14 +1,14 @@
 import 'reflect-metadata';
 import { Server } from 'http';
-import {
-	Application, Request, Response, NextFunction,
-} from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
+import swaggerJSDoc from 'swagger-jsdoc';
 import { run } from '~/runtime';
-import {
-	HTTP_SERVER, CONFIG, EXPRESS_APP, ROUTER,
-} from './consts';
+import swaggerUi from 'swagger-ui-express';
+import { HTTP_SERVER, CONFIG, EXPRESS_APP, ROUTER } from './consts';
 import { IConfig } from './interfaces/config';
 import { UserController } from './controllers';
+import { swaggerOptions } from './swagger';
+import { IAppError } from './interfaces/app-error';
 
 
 (async () => {
@@ -21,26 +21,26 @@ import { UserController } from './controllers';
 
 	app.use(config.prefix, router);
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	app.use((err: any, req: Request, res: Response, __: NextFunction) => {
+	app.use((err: any, _: Request, res: Response, __: NextFunction) => {
 		if (err.name === 'ValidationError') {
 			res.status(422);
 			return res.json(err);
 		}
 
 		res.status(500);
+		let errorMessage;
 
 		if (err instanceof Error) {
-			return res.json({
-				reason: err.message,
-			});
+			errorMessage = err.message;
 		}
 
 		return res.json({
-			reason: 'Неизвестная ошибка',
-		});
+			reason: errorMessage || "Неизвестная ошибка"
+		} as IAppError);
 	});
 
+	const swaggerSpec = swaggerJSDoc(swaggerOptions);
+	app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 	container.get<Server>(HTTP_SERVER).listen(config.port, () => {
 		console.log(`Server available on localhost:${config.port}`);

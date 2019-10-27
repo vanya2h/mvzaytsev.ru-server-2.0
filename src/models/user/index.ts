@@ -1,6 +1,4 @@
-import {
-	Model, Schema, model, HookNextFunction,
-} from 'mongoose';
+import { Model, Schema, model, HookNextFunction } from 'mongoose';
 import { provides } from '~/utils/provides';
 import { PasswordVerifier } from '~/services/password-verifier';
 import { IUser, IUserModel } from './types';
@@ -9,11 +7,27 @@ import { USER_MODEL } from '~/consts';
 @provides(UserModel)
 export class UserModel {
 	public static createSchema = (): Schema<IUser> => new Schema({
-		email: { type: Schema.Types.ObjectId, unique: true, isRequired: true },
-		name: { type: String, isRequired: true },
-		isAdmin: { type: Boolean, default: false },
-		password: { type: String, isRequired: true },
-		bio: { type: String, isRequired: false },
+		name: {
+			type: String,
+			isRequired: true,
+		},
+		isAdmin: {
+			type: Boolean,
+			default: false,
+		},
+		email: {
+			type: Schema.Types.ObjectId,
+			unique: true,
+			isRequired: true,
+		},
+		password: {
+			type: String,
+			isRequired: true,
+		},
+		bio: {
+			type: String,
+			isRequired: false,
+		},
 	},
 	{
 		timestamps: true,

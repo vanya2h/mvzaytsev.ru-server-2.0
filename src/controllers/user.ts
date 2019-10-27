@@ -22,6 +22,28 @@ export class UserController {
 		const router = express.Router();
 		const { model } = this.userModel;
 
+		/**
+		 *	@swagger
+		 *	/user/auth:
+		 *   get:
+		 *    description: Validates authorization token
+		 *    produces:
+		 *     - application/json
+		 *    security:
+		 *     - ApiKey: []
+		 *    responses:
+		 *     200:
+		 *      description: Ok
+		 *      schema:
+		 *       type: object
+		 *       $ref: '#/definitions/User'
+		 *     500:
+		 *      description: Error
+		 *      schema:
+		 *       type: object
+		 *       $ref: '#/definitions/AppError'
+		*/
+
 		router.get('/auth', protect, async (req, res) => {
 			res.json((req as any).user);
 		});
